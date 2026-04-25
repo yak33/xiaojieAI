@@ -1,0 +1,12 @@
+spring:
+  ai:
+    dashscope:
+      api-key: your-dashscope-api-key
+    vectorstore:
+      qdrant:
+        host: your-qdrant-host
+        port: 6334
+        api-key: your-qdrant-api-key
+        use-tls: true
+        collection-name: customs_knowledge
+        initialize-schema: true

@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: xiaojieAI
+  ai:
+    dashscope:
+      api-key: ${AI_DASHSCOPE_API_KEY:}
+    vectorstore:
+      qdrant:
+        host: ${QDRANT_HOST:localhost}
+        port: ${QDRANT_PORT:6334}
+        api-key: ${QDRANT_API_KEY:}
+        use-tls: ${QDRANT_USE_TLS:false}
+        collection-name: ${QDRANT_COLLECTION_NAME:customs_knowledge}
+        initialize-schema: ${QDRANT_INITIALIZE_SCHEMA:true}
