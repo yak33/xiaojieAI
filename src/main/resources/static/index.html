@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>xiaojieAI Assistant Demo</title>
+    <link rel="stylesheet" href="assistant-demo.css">
+</head>
+<body>
+<div class="demo-shell mode-sidebar" id="demoShell">
+    <header class="topbar">
+        <div class="brand-block">
+            <div class="brand-mark">xj</div>
+            <div>
+                <div class="brand-title">关务运营工作台</div>
+                <div class="brand-subtitle">xiaojieAI 嵌入式助手演示页</div>
+            </div>
+        </div>
+        <div class="topbar-actions">
+            <div class="env-badge">AI-Core / Demo</div>
+            <button class="launcher-inline" id="inlineLauncher" type="button">打开助手</button>
+        </div>
+    </header>
+
+    <main class="workspace">
+        <section class="host-surface">
+            <section class="metrics-band">
+                <article class="metric">
+                    <span class="metric-label">待归类商品</span>
+                    <strong class="metric-value">184</strong>
+                    <span class="metric-note">较昨日 +12</span>
+                </article>
+                <article class="metric">
+                    <span class="metric-label">待复核报关单</span>
+                    <strong class="metric-value">36</strong>
+                    <span class="metric-note">异常 5 单</span>
+                </article>
+                <article class="metric">
+                    <span class="metric-label">流程超时任务</span>
+                    <strong class="metric-value">9</strong>
+                    <span class="metric-note">优先处理口岸预录入</span>
+                </article>
+            </section>
+
+            <section class="host-grid">
+                <section class="panel">
+                    <div class="panel-header">
+                        <h2>报关单处理队列</h2>
+                        <button class="panel-action" type="button">导出</button>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>报关单号</th>
+                                <th>客户</th>
+                                <th>状态</th>
+                                <th>口岸</th>
+                                <th>更新时间</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>530120260425001</td>
+                                <td>华东精密制造</td>
+                                <td><span class="status status-review">待复核</span></td>
+                                <td>上海洋山</td>
+                                <td>18:42</td>
+                            </tr>
+                            <tr>
+                                <td>530120260425014</td>
+                                <td>宁波联运电子</td>
+                                <td><span class="status status-running">审单中</span></td>
+                                <td>宁波北仑</td>
+                                <td>18:11</td>
+                            </tr>
+                            <tr>
+                                <td>530120260425029</td>
+                                <td>粤港汽车零部件</td>
+                                <td><span class="status status-warning">归类待确认</span></td>
+                                <td>深圳盐田</td>
+                                <td>17:58</td>
+                            </tr>
+                            <tr>
+                                <td>530120260425037</td>
+                                <td>苏州医疗器械</td>
+                                <td><span class="status status-ready">放行完成</span></td>
+                                <td>上海外港</td>
+                                <td>17:16</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="panel">
+                    <div class="panel-header">
+                        <h2>今日异常摘要</h2>
+                        <button class="panel-action" type="button">刷新</button>
+                    </div>
+                    <div class="alerts">
+                        <article class="alert-item">
+                            <span class="alert-level alert-level-high">高</span>
+                            <div>
+                                <h3>税则归类分歧待裁定</h3>
+                                <p>3 个料号的历史归类建议与本次申报要素存在冲突。</p>
+                            </div>
+                        </article>
+                        <article class="alert-item">
+                            <span class="alert-level alert-level-medium">中</span>
+                            <div>
+                                <h3>报关单流程节点停滞</h3>
+                                <p>2 单在单证复核节点停留超过 4 小时。</p>
+                            </div>
+                        </article>
+                        <article class="alert-item">
+                            <span class="alert-level alert-level-low">低</span>
+                            <div>
+                                <h3>知识库法规版本待更新</h3>
+                                <p>一份进口食品标签规范文件需补充 2026 版说明。</p>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+            </section>
+        </section>
+
+        <aside class="assistant-panel" id="assistantPanel">
+            <div class="assistant-header">
+                <div>
+                    <div class="assistant-kicker">Embedded Assistant</div>
+                    <h1>xiaojieAI</h1>
+                </div>
+                <div class="assistant-actions">
+                    <div class="mode-switch" role="tablist" aria-label="assistant mode">
+                        <button class="mode-button is-active" data-mode="sidebar" type="button">侧栏</button>
+                        <button class="mode-button" data-mode="floating" type="button">浮窗</button>
+                    </div>
+                    <button class="ghost-button" id="closeAssistant" type="button">收起</button>
+                </div>
+            </div>
+
+            <section class="prompt-bank">
+                <button class="prompt-chip" data-prompt="帮我查询下 530120260425001 的流程状态" type="button">查询流程状态</button>
+                <button class="prompt-chip" data-prompt="帮我查询下集成电路的税则信息" type="button">查询税则信息</button>
+                <button class="prompt-chip" data-prompt="总结一下今天报关异常的重点" type="button">总结异常重点</button>
+            </section>
+
+            <section class="chat-stream" id="chatStream" aria-live="polite">
+                <article class="message message-assistant">
+                    <div class="message-role">AI</div>
+                    <div class="message-content">
+                        <p>可直接输入报关单号、商品描述或业务问题。我会调用当前服务的 `/ai/chat` 接口返回结果。</p>
+                    </div>
+                </article>
+            </section>
+
+            <form class="composer" id="chatForm">
+                <label class="composer-label" for="messageInput">输入业务问题</label>
+                <textarea id="messageInput" name="message" rows="3" placeholder="例如：帮我查询下 530120260425001 现在的流程状态"></textarea>
+                <div class="composer-actions">
+                    <button class="ghost-button" id="voiceButton" type="button">语音</button>
+                    <button class="primary-button" id="sendButton" type="submit">发送</button>
+                </div>
+            </form>
+        </aside>
+    </main>
+
+    <button class="floating-launcher" id="floatingLauncher" type="button" aria-label="open assistant">
+        <span>AI</span>
+    </button>
+</div>
+
+<script src="assistant-demo.js"></script>
+</body>
+</html>

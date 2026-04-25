@@ -2,6 +2,13 @@ spring:
   ai:
     dashscope:
       api-key: your-dashscope-api-key
+      chat:
+        options:
+          model: qwen-plus
+      embedding:
+        options:
+          model: text-embedding-v4
+          dimensions: 1024
     vectorstore:
       qdrant:
         host: your-qdrant-host
