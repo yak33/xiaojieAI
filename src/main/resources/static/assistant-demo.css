@@ -139,6 +139,7 @@ button {
     position: relative;
     display: grid;
     grid-template-columns: minmax(0, 1fr) 380px;
+    align-items: start;
     gap: 18px;
     margin-top: 18px;
 }
@@ -325,6 +326,7 @@ th {
     flex-direction: column;
     min-height: calc(100vh - 124px);
     box-shadow: var(--shadow);
+    overflow: hidden;
 }
 
 .assistant-kicker {
@@ -373,11 +375,35 @@ th {
 
 .chat-stream {
     flex: 1;
+    min-height: 0;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 14px;
     padding: 18px;
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(23, 107, 89, 0.42) transparent;
+}
+
+.chat-stream::-webkit-scrollbar {
+    width: 10px;
+}
+
+.chat-stream::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.chat-stream::-webkit-scrollbar-thumb {
+    background: rgba(23, 107, 89, 0.32);
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background-clip: padding-box;
+}
+
+.chat-stream::-webkit-scrollbar-thumb:hover {
+    background: rgba(23, 107, 89, 0.48);
+    background-clip: padding-box;
 }
 
 .message {
@@ -498,6 +524,9 @@ textarea:focus,
 .mode-sidebar .assistant-panel {
     position: sticky;
     top: 18px;
+    height: calc(100vh - 36px);
+    min-height: calc(100vh - 36px);
+    max-height: calc(100vh - 36px);
 }
 
 .is-busy {
