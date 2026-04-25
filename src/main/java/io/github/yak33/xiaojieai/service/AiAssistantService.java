@@ -1,59 +1,55 @@
 package io.github.yak33.xiaojieai.service;
 
+import io.github.yak33.xiaojieai.routing.RagRoutingPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
 import org.springframework.ai.document.Document;
-import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.regex.Pattern;
 
 /**
  * 关务系统 AI 助手服务
- * 
+ * <p>
+ * 仅承担一次对话的编排：路由选 client、调用模型、记录审计日志，以及知识入库。
+ * ChatClient 拼装由 {@code AiClientConfiguration} 负责，路由判定由 {@link RagRoutingPolicy} 负责。
+ *
  * @author ZHANGCHAO
  */
 @Service
 public class AiAssistantService {
 
     private static final Logger log = LoggerFactory.getLogger(AiAssistantService.class);
-    private static final Set<String> RAG_HINT_KEYWORDS = Set.of(
-            "税则", "hs", "海关", "报关", "报关单", "申报", "归类", "监管条件", "税率", "税金",
-            "流程", "节点", "订单", "关务", "法规", "制度", "sop", "操作手册", "指引", "口岸",
-            "舱单", "单证", "税号", "编码", "商品归类", "增值税", "消费税", "征免", "知识库"
-    );
-    private static final Pattern BUSINESS_CODE_PATTERN = Pattern.compile("\\b[a-zA-Z]{0,4}\\d{6,}\\b");
 
     private final ChatClient plainChatClient;
     private final ChatClient ragChatClient;
+    private final RagRoutingPolicy ragRoutingPolicy;
     private final VectorStore vectorStore;
 
-    public AiAssistantService(ChatClient.Builder builder, VectorStore vectorStore) {
-        this.plainChatClient = builder.build();
-        this.ragChatClient = builder
-                .defaultAdvisors(QuestionAnswerAdvisor.builder(vectorStore)
-                        .searchRequest(SearchRequest.builder().build())
-                        .build())
-                .build();
+    public AiAssistantService(@Qualifier("plainChatClient") ChatClient plainChatClient,
+                              @Qualifier("ragChatClient") ChatClient ragChatClient,
+                              RagRoutingPolicy ragRoutingPolicy,
+                              VectorStore vectorStore) {
+        this.plainChatClient = plainChatClient;
+        this.ragChatClient = ragChatClient;
+        this.ragRoutingPolicy = ragRoutingPolicy;
         this.vectorStore = vectorStore;
     }
 
     /**
-     * 与 AI 助手对话 (基于 RAG)
+     * 与 AI 助手对话，按路由策略选择 plain / rag 通道。
      *
      * @param userMessage 用户消息
      * @return AI 回复
      */
     public String chat(String userMessage) {
         long startedAt = System.currentTimeMillis();
-        boolean ragRoute = shouldUseRag(userMessage);
+        boolean ragRoute = ragRoutingPolicy.shouldUseRag(userMessage);
         ChatClient activeChatClient = ragRoute ? ragChatClient : plainChatClient;
         log.info("Calling AI assistant, route={}, messageLength={}",
                 ragRoute ? "rag" : "plain",
@@ -107,18 +103,5 @@ public class AiAssistantService {
         log.info("Batch knowledge upload completed, durationMs={}, documentCount={}",
                 System.currentTimeMillis() - startedAt,
                 contents == null ? 0 : contents.size());
-    }
-
-    private boolean shouldUseRag(String userMessage) {
-        if (userMessage == null || userMessage.isBlank()) {
-            return false;
-        }
-
-        String normalizedMessage = userMessage.toLowerCase();
-        if (RAG_HINT_KEYWORDS.stream().anyMatch(normalizedMessage::contains)) {
-            return true;
-        }
-
-        return BUSINESS_CODE_PATTERN.matcher(normalizedMessage).find();
     }
 }
