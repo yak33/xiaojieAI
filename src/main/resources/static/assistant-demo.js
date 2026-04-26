@@ -14,6 +14,7 @@
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
     let activeMode = "sidebar";
+    let currentConversationId = null;
 
     const setMode = (mode) => {
         activeMode = mode;
@@ -53,6 +54,27 @@
         form.classList.toggle("is-busy", busy);
     };
 
+    const parseSseEventBlock = (block) => {
+        const lines = block.split("\n");
+        let eventName = "message";
+        let dataStr = "";
+        for (const line of lines) {
+            if (line.startsWith("event:")) {
+                eventName = line.slice(6).trim();
+            } else if (line.startsWith("data:")) {
+                dataStr += line.slice(5).trim();
+            }
+        }
+        if (!dataStr) {
+            return null;
+        }
+        try {
+            return { event: eventName, data: JSON.parse(dataStr) };
+        } catch (_error) {
+            return null;
+        }
+    };
+
     const sendMessage = async (message) => {
         const payload = message.trim();
         if (!payload) {
@@ -64,23 +86,72 @@
         setBusy(true);
 
         const placeholder = appendMessage("assistant", "正在处理...");
+        const placeholderContent = placeholder.querySelector(".message-content");
+
+        let answerText = "";
+        let firstDeltaArrived = false;
 
         try {
-            const response = await fetch(`/ai/chat?message=${encodeURIComponent(payload)}`, {
-                method: "GET",
+            const response = await fetch("/ai/chat/stream", {
+                method: "POST",
                 headers: {
-                    "Accept": "text/plain"
-                }
+                    "Content-Type": "application/json",
+                    "Accept": "text/event-stream"
+                },
+                body: JSON.stringify({
+                    message: payload,
+                    conversationId: currentConversationId
+                })
             });
 
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}`);
             }
 
-            const answer = await response.text();
-            placeholder.querySelector(".message-content").textContent = answer || "未返回内容";
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = "";
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) {
+                    break;
+                }
+                buffer += decoder.decode(value, { stream: true });
+
+                const events = buffer.split(/\n\n/);
+                buffer = events.pop() ?? "";
+
+                for (const block of events) {
+                    const parsed = parseSseEventBlock(block);
+                    if (!parsed) {
+                        continue;
+                    }
+                    const { event, data } = parsed;
+
+                    if (event === "meta") {
+                        currentConversationId = data.conversationId ?? currentConversationId;
+                    } else if (event === "delta") {
+                        if (!firstDeltaArrived) {
+                            placeholderContent.textContent = "";
+                            firstDeltaArrived = true;
+                        }
+                        answerText += data.content ?? "";
+                        placeholderContent.textContent = answerText;
+                        stream.scrollTop = stream.scrollHeight;
+                    } else if (event === "error") {
+                        placeholderContent.textContent =
+                            `请求失败：${data.message ?? "未知错误"}`;
+                        return;
+                    }
+                }
+            }
+
+            if (!firstDeltaArrived) {
+                placeholderContent.textContent = "未返回内容";
+            }
         } catch (error) {
-            placeholder.querySelector(".message-content").textContent =
+            placeholderContent.textContent =
                 `请求失败：${error.message}。请确认后端服务、模型配置和 Qdrant 连接是否可用。`;
         } finally {
             setBusy(false);

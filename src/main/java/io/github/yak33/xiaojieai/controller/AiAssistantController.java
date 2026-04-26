@@ -1,16 +1,24 @@
 package io.github.yak33.xiaojieai.controller;
 
+import io.github.yak33.xiaojieai.dto.ChatCommand;
+import io.github.yak33.xiaojieai.dto.ChatReply;
 import io.github.yak33.xiaojieai.service.AiAssistantService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.MediaType;
+import org.springframework.http.codec.ServerSentEvent;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
 
 import java.util.List;
 import java.util.Map;
 
 /**
  * 关务系统 AI 助手控制器
- * 
+ *
  * @author ZHANGCHAO
  */
 @RestController
@@ -26,21 +34,27 @@ public class AiAssistantController {
     }
 
     /**
-     * 智能对话接口
-     *
-     * @param message 用户输入的关务问题
-     * @return AI 助手的回答
+     * 同步对话：返回完整 {@link ChatReply}。
      */
-    @GetMapping("/chat")
-    public String chat(@RequestParam String message) {
-        log.info("Received chat request, messagePreview='{}'", abbreviate(message, 80));
-        return aiAssistantService.chat(message);
+    @PostMapping(path = "/chat", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ChatReply chat(@RequestBody ChatCommand command) {
+        log.info("Received chat request, conversationId={}, messagePreview='{}'",
+                command.conversationId(), abbreviate(command.message(), 80));
+        return aiAssistantService.chat(command);
+    }
+
+    /**
+     * 流式对话：以 SSE 命名事件 {@code meta / delta / done / error} 输出。
+     */
+    @PostMapping(path = "/chat/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ServerSentEvent<Object>> chatStream(@RequestBody ChatCommand command) {
+        log.info("Received chat stream request, conversationId={}, messagePreview='{}'",
+                command.conversationId(), abbreviate(command.message(), 80));
+        return aiAssistantService.chatStream(command);
     }
 
     /**
      * 上传知识文档
-     *
-     * @param payload 包含内容和元数据
      */
     @PostMapping("/knowledge")
     public void uploadKnowledge(@RequestBody Map<String, Object> payload) {
@@ -55,8 +69,6 @@ public class AiAssistantController {
 
     /**
      * 批量上传知识文档
-     *
-     * @param contents 文档内容列表
      */
     @PostMapping("/knowledge/batch")
     public void batchUpload(@RequestBody List<String> contents) {
