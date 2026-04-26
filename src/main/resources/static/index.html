@@ -37,13 +37,13 @@
         <!-- mocked sidebar -->
         <aside class="host-sidebar" data-host-sidebar>
             <div class="host-sidebar__group">
-                <div class="host-sidebar__title">queue</div>
+                <div class="host-sidebar__title">处理队列</div>
                 <div class="host-sidebar__item"><span>待归类</span><span class="num">184</span></div>
                 <div class="host-sidebar__item"><span>待复核</span><span class="num">36</span></div>
                 <div class="host-sidebar__item"><span>超时</span><span class="num">9</span></div>
             </div>
             <div class="host-sidebar__group">
-                <div class="host-sidebar__title">archive</div>
+                <div class="host-sidebar__title">归档</div>
                 <div class="host-sidebar__item"><span>本月</span><span class="num">2,184</span></div>
                 <div class="host-sidebar__item"><span>本季</span><span class="num">6,109</span></div>
             </div>
@@ -53,7 +53,7 @@
         <section class="host-main">
             <div class="host-main__header">
                 <h1 class="host-main__title">报关单处理 · 今日</h1>
-                <span class="host-main__hint">mocked host content</span>
+                <span class="host-main__hint">模拟宿主内容</span>
             </div>
 
             <div class="host-main__grid">
@@ -76,37 +76,37 @@
 
             <div class="host-table host-card--blur">
                 <div class="host-table__row host-table__row--head">
-                    <div>id</div>
-                    <div>customer</div>
-                    <div>state</div>
-                    <div>port</div>
-                    <div>updated</div>
+                    <div>单号</div>
+                    <div>客户</div>
+                    <div>状态</div>
+                    <div>口岸</div>
+                    <div>更新</div>
                 </div>
                 <div class="host-table__row">
                     <div>530120260425001</div>
                     <div>华东精密</div>
-                    <div class="state review">review</div>
+                    <div class="state review">待复核</div>
                     <div>YTSH</div>
                     <div>18:42</div>
                 </div>
                 <div class="host-table__row">
                     <div>530120260425014</div>
                     <div>宁波联运</div>
-                    <div class="state audit">audit</div>
+                    <div class="state audit">审单中</div>
                     <div>NBBL</div>
                     <div>18:11</div>
                 </div>
                 <div class="host-table__row">
                     <div>530120260425029</div>
                     <div>粤港汽车</div>
-                    <div class="state hold">hold</div>
+                    <div class="state hold">暂扣</div>
                     <div>SZYT</div>
                     <div>17:58</div>
                 </div>
                 <div class="host-table__row">
                     <div>530120260425037</div>
                     <div>苏州医械</div>
-                    <div class="state cleared">cleared</div>
+                    <div class="state cleared">已放行</div>
                     <div>YGOG</div>
                     <div>17:16</div>
                 </div>
@@ -122,14 +122,14 @@
                             <strong>XIAOJIE</strong><em>/</em>AI
                         </div>
                         <span class="xj-assistant__live">
-                            <span class="dot-live"></span>live
+                            <span class="dot-live"></span>在线
                         </span>
                     </div>
                     <div class="xj-assistant__actions">
                         <div class="xj-pose">
-                            <button data-xj-pose="side" aria-pressed="true">side</button>
-                            <button data-xj-pose="floating">float</button>
-                            <button data-xj-pose="fullscreen">full</button>
+                            <button data-xj-pose="side" aria-pressed="true">侧栏</button>
+                            <button data-xj-pose="floating">浮窗</button>
+                            <button data-xj-pose="fullscreen">全屏</button>
                         </div>
                         <button class="xj-iconbtn" data-xj-collapse aria-label="collapse">×</button>
                     </div>
@@ -137,15 +137,15 @@
 
                 <div class="xj-assistant__meta">
                     <div class="xj-meta-item">
-                        <span class="xj-meta-key">session</span>
+                        <span class="xj-meta-key">会话</span>
                         <span class="xj-meta-val" data-xj-session>—</span>
                     </div>
                     <div class="xj-meta-item">
-                        <span class="xj-meta-key">model</span>
+                        <span class="xj-meta-key">模型</span>
                         <span class="xj-meta-val">qwen-plus</span>
                     </div>
                     <div class="xj-meta-item">
-                        <span class="xj-meta-key">route</span>
+                        <span class="xj-meta-key">路由</span>
                         <span class="xj-meta-val" data-xj-route>—</span>
                     </div>
                 </div>
@@ -164,20 +164,20 @@
 
                 <section class="xj-stream" data-xj-stream aria-live="polite">
                     <article class="message message-assistant">
-                        <div class="message-role" data-time="ready">ai</div>
-                        <div class="message-content">输入业务问题或单据号,我会调用 /ai/chat/stream 实时返回。Cmd/Ctrl + Enter 快捷发送。</div>
+                        <div class="message-role" data-time="就绪">AI</div>
+                        <div class="message-content">输入业务问题或单据号，我会调用 /ai/chat/stream 实时返回。Cmd / Ctrl + Enter 快捷发送。</div>
                     </article>
                 </section>
 
                 <form class="xj-composer" data-xj-form>
-                    <label class="xj-composer__label" for="xj-input">message</label>
+                    <label class="xj-composer__label" for="xj-input">消息</label>
                     <textarea id="xj-input"
                               data-xj-input
                               rows="2"
-                              placeholder="例如:帮我查询下 530120260425001 现在的流程状态"></textarea>
+                              placeholder="例如：帮我查询下 530120260425001 现在的流程状态"></textarea>
                     <div class="xj-composer__row">
-                        <button type="button" class="xj-btn" data-xj-voice>voice</button>
-                        <button type="submit" class="xj-btn xj-btn--primary" data-xj-send>send ⏎</button>
+                        <button type="button" class="xj-btn" data-xj-voice>语音</button>
+                        <button type="submit" class="xj-btn xj-btn--primary" data-xj-send>发送 ⏎</button>
                     </div>
                 </form>
             </section>
@@ -188,11 +188,11 @@
     <footer class="demo-bar">
         <div class="demo-bar__brand">
             <strong>xiaojieAI</strong>
-            <span class="demo-bar__badge">embed demo</span>
+            <span class="demo-bar__badge">嵌入演示</span>
         </div>
 
         <div class="demo-bar__group">
-            <span class="label">host</span>
+            <span class="label">宿主</span>
             <div class="demo-bar__seg" data-host-switch>
                 <button data-host-value="customs" aria-pressed="true">关务</button>
                 <button data-host-value="erp">ERP</button>
@@ -201,22 +201,22 @@
         </div>
 
         <div class="demo-bar__group">
-            <span class="label">pose</span>
+            <span class="label">形态</span>
             <div class="demo-bar__seg" data-pose-switch>
-                <button data-pose-value="side" aria-pressed="true">side</button>
-                <button data-pose-value="floating">floating</button>
-                <button data-pose-value="fullscreen">full</button>
+                <button data-pose-value="side" aria-pressed="true">侧栏</button>
+                <button data-pose-value="floating">浮窗</button>
+                <button data-pose-value="fullscreen">全屏</button>
             </div>
         </div>
 
         <div class="demo-bar__group">
-            <span class="label">theme</span>
+            <span class="label">主题</span>
             <button class="demo-bar__theme" data-theme-toggle>
-                <span data-theme-current>dark</span>
+                <span data-theme-current>暗色</span>
             </button>
         </div>
 
-        <a class="demo-bar__link" href="knowledge.html">/knowledge ↗</a>
+        <a class="demo-bar__link" href="knowledge.html">知识库 ↗</a>
     </footer>
 
     <button class="xj-launcher" data-xj-launcher>AI</button>

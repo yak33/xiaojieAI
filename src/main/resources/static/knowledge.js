@@ -126,7 +126,7 @@
     };
 
     const previewDoc = (doc) => {
-        toast(`本地预览: ${doc.title || '(未命名)'} · ${doc.contentLength} chars`, 'info');
+        toast(`本地预览: ${doc.title || '(未命名)'} · ${doc.contentLength} 字符`, 'info');
     };
 
     const removeDoc = (id) => {
@@ -148,14 +148,14 @@
         const metadataRaw = (fd.get('metadata') || '').toString().trim();
 
         if (!content.trim()) {
-            toast('content 不能为空', 'error');
+            toast('正文不能为空', 'error');
             return;
         }
 
         let metadataExtra = {};
         if (metadataRaw) {
             try { metadataExtra = JSON.parse(metadataRaw); }
-            catch { toast('metadata 不是合法 JSON', 'error'); return; }
+            catch { toast('元数据不是合法 JSON', 'error'); return; }
         }
         const metadata = {
             ...metadataExtra,
@@ -167,7 +167,7 @@
 
         const submitBtn = els.formSingle.querySelector('[type="submit"]');
         submitBtn.disabled = true;
-        submitBtn.textContent = 'ingesting...';
+        submitBtn.textContent = '入库中…';
 
         try {
             const response = await fetch('/ai/knowledge', {
@@ -192,7 +192,7 @@
             toast(`入库失败: ${err.message}`, 'error');
         } finally {
             submitBtn.disabled = false;
-            submitBtn.textContent = 'ingest →';
+            submitBtn.textContent = '入库 →';
         }
     });
 
@@ -282,7 +282,7 @@
 
         const submitBtn = els.formBatch.querySelector('[type="submit"]');
         submitBtn.disabled = true;
-        submitBtn.textContent = 'ingesting...';
+        submitBtn.textContent = '入库中…';
 
         try {
             const response = await fetch('/ai/knowledge/batch', {
@@ -327,7 +327,7 @@
             toast(`批量入库失败: ${err.message}`, 'error');
         } finally {
             submitBtn.disabled = false;
-            submitBtn.textContent = 'ingest batch →';
+            submitBtn.textContent = '批量入库 →';
         }
     });
 

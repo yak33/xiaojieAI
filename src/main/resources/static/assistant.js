@@ -51,7 +51,7 @@
         article.className = `message message-${role}`;
         const header = document.createElement('div');
         header.className = 'message-role';
-        header.textContent = role === 'user' ? 'user' : 'ai';
+        header.textContent = role === 'user' ? '我' : 'AI';
         header.dataset.time = stamp();
         const bubble = document.createElement('div');
         bubble.className = 'message-content';
@@ -106,7 +106,7 @@
         const bubble = placeholder.querySelector('.message-content');
         const spinner = document.createElement('span');
         spinner.className = 'message-spinner';
-        spinner.textContent = 'thinking';
+        spinner.textContent = '思考中';
         bubble.append(spinner);
 
         let answerText = '';
@@ -243,7 +243,7 @@
         recognition.maxAlternatives = 1;
         const original = voiceBtn.textContent;
         voiceBtn.disabled = true;
-        voiceBtn.textContent = 'rec...';
+        voiceBtn.textContent = '识别中…';
         recognition.onresult = (event) => {
             if (input) input.value = event.results[0][0].transcript;
         };
