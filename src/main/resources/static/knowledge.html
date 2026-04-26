@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark" data-pose="floating">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>xiaojieAI · knowledge</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="tokens.css">
+    <link rel="stylesheet" href="assistant.css">
+    <link rel="stylesheet" href="knowledge.css">
+</head>
+<body>
+<div class="kb-shell">
+    <!-- ========== top bar ========== -->
+    <header class="kb-bar">
+        <div class="kb-brand">
+            <span class="kb-brand__mark">⌬</span>
+            <span class="kb-brand__name">xiaojieAI</span>
+            <span class="kb-brand__sep">▸</span>
+            <span class="kb-brand__section">knowledge-base</span>
+        </div>
+        <div class="kb-meta">
+            <span class="kb-meta__item">docs · <span class="num" data-kb-count>0</span></span>
+            <span class="kb-meta__item">last-sync · <span class="num" data-kb-sync>—</span></span>
+            <span class="kb-meta__item">store · qdrant / customs_knowledge</span>
+        </div>
+        <div class="kb-actions">
+            <button class="demo-bar__theme" data-theme-toggle>
+                <span data-theme-current>dark</span>
+            </button>
+            <a class="demo-bar__link" href="index.html">↩ /demo</a>
+        </div>
+    </header>
+
+    <!-- ========== filters sub-bar ========== -->
+    <div class="kb-filters">
+        <label class="kb-filter">
+            src
+            <select data-kb-filter-src>
+                <option value="">all</option>
+                <option value="regulation">regulation</option>
+                <option value="sop">sop</option>
+                <option value="manual">manual</option>
+                <option value="batch">batch</option>
+            </select>
+        </label>
+        <label class="kb-filter">
+            q
+            <input type="search" data-kb-filter-q placeholder="title / source / preview">
+        </label>
+        <span class="kb-filter" style="margin-left:auto">
+            note · 列表为本地视图,后端尚未提供 list 接口;新入库会写入 Qdrant 同时落到本地视图
+        </span>
+    </div>
+
+    <!-- ========== body ========== -->
+    <main class="kb-body">
+        <!-- documents list -->
+        <section class="kb-list">
+            <div class="kb-list__head">
+                <div>title / preview</div>
+                <div>source</div>
+                <div>ver</div>
+                <div>effective</div>
+                <div style="text-align:right">ops</div>
+            </div>
+            <div data-kb-list></div>
+            <div class="kb-empty" data-kb-empty>
+                no documents in local view yet
+            </div>
+        </section>
+
+        <!-- ingest panel -->
+        <aside class="kb-panel">
+            <div class="kb-panel__tabs" role="tablist">
+                <button class="kb-panel__tab"
+                        data-kb-tab="single"
+                        aria-selected="true"
+                        role="tab">single ingest</button>
+                <button class="kb-panel__tab"
+                        data-kb-tab="batch"
+                        aria-selected="false"
+                        role="tab">batch ingest</button>
+            </div>
+            <div class="kb-panel__body">
+                <!-- pane: single -->
+                <div class="kb-panel__pane" data-kb-pane="single" aria-hidden="false">
+                    <form class="kb-form" data-kb-form-single>
+                        <div class="kb-form__row">
+                            <label class="kb-form__label" for="kb-title">title</label>
+                            <input id="kb-title" name="title" type="text"
+                                   placeholder="进口食品标签管理规范">
+                        </div>
+                        <div class="kb-form__row kb-form__row--inline">
+                            <div class="kb-form__row">
+                                <label class="kb-form__label" for="kb-src">source</label>
+                                <input id="kb-src" name="source" type="text" placeholder="regulation">
+                            </div>
+                            <div class="kb-form__row">
+                                <label class="kb-form__label" for="kb-ver">version</label>
+                                <input id="kb-ver" name="version" type="text" placeholder="3">
+                            </div>
+                            <div class="kb-form__row">
+                                <label class="kb-form__label" for="kb-eff">effective</label>
+                                <input id="kb-eff" name="effectiveFrom" type="date">
+                            </div>
+                        </div>
+                        <div class="kb-form__row">
+                            <label class="kb-form__label" for="kb-content">content</label>
+                            <textarea id="kb-content" name="content" required
+                                      placeholder="文档正文 ..."></textarea>
+                        </div>
+                        <div class="kb-form__row">
+                            <label class="kb-form__label" for="kb-meta">metadata · extra json (optional)</label>
+                            <textarea id="kb-meta" name="metadata"
+                                      placeholder='{"tags":["food","label"],"securityLevel":"public"}'></textarea>
+                        </div>
+                        <div class="kb-form__hint">
+                            title / source / version / effective 会自动并入 metadata。<span class="alarm">*</span> content 必填。
+                        </div>
+                        <div class="kb-form__actions">
+                            <button type="submit" class="xj-btn xj-btn--primary">ingest →</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- pane: batch -->
+                <div class="kb-panel__pane" data-kb-pane="batch" aria-hidden="true">
+                    <form class="kb-form" data-kb-form-batch>
+                        <div class="kb-drop" data-kb-drop>
+                            <span class="kb-drop__icon">⤓</span>
+                            把 .md / .txt 拖到这里 · 或点击选择文件
+                            <input type="file" data-kb-drop-input multiple accept=".md,.markdown,.txt"
+                                   style="display:none">
+                        </div>
+                        <div class="kb-batch-list" data-kb-batch-list></div>
+                        <div class="kb-form__row">
+                            <label class="kb-form__label" for="kb-batch-extra">extra inline content</label>
+                            <textarea id="kb-batch-extra" data-kb-batch-extra
+                                      placeholder="多段文档用一行 --- 分隔&#10;&#10;第一段...&#10;---&#10;第二段..."
+                                      style="min-height:120px"></textarea>
+                        </div>
+                        <div class="kb-form__hint">
+                            批量接口 <code>/ai/knowledge/batch</code> 当前只接受 content 数组,不携带 metadata;
+                            如需 metadata,使用左侧单篇入库。
+                        </div>
+                        <div class="kb-form__actions">
+                            <button type="submit" class="xj-btn xj-btn--primary">ingest batch →</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- ========== floating assistant (knowledge admin 也是一种宿主) ========== -->
+    <div data-xj-assistant-root data-pose="floating" data-collapsed="true">
+        <section class="xj-assistant">
+            <header class="xj-assistant__header">
+                <div class="xj-assistant__brand">
+                    <div class="xj-assistant__name">
+                        <strong>XIAOJIE</strong><em>/</em>AI
+                    </div>
+                    <span class="xj-assistant__live">
+                        <span class="dot-live"></span>live
+                    </span>
+                </div>
+                <div class="xj-assistant__actions">
+                    <div class="xj-pose">
+                        <button data-xj-pose="floating" aria-pressed="true">float</button>
+                        <button data-xj-pose="fullscreen">full</button>
+                    </div>
+                    <button class="xj-iconbtn" data-xj-collapse aria-label="collapse">×</button>
+                </div>
+            </header>
+            <div class="xj-assistant__meta">
+                <div class="xj-meta-item">
+                    <span class="xj-meta-key">session</span>
+                    <span class="xj-meta-val" data-xj-session>—</span>
+                </div>
+                <div class="xj-meta-item">
+                    <span class="xj-meta-key">model</span>
+                    <span class="xj-meta-val">qwen-plus</span>
+                </div>
+                <div class="xj-meta-item">
+                    <span class="xj-meta-key">route</span>
+                    <span class="xj-meta-val" data-xj-route>—</span>
+                </div>
+            </div>
+            <div class="xj-prompts">
+                <button class="xj-prompt"
+                        data-xj-prompt="知识库里有哪些进口食品标签的规定?"
+                        data-shortcut="⌘1">查规定</button>
+                <button class="xj-prompt"
+                        data-xj-prompt="HS 编码 8542 怎么归类?"
+                        data-shortcut="⌘2">查归类</button>
+                <button class="xj-prompt"
+                        data-xj-prompt="复核 SOP 关键步骤"
+                        data-shortcut="⌘3">查 SOP</button>
+            </div>
+            <section class="xj-stream" data-xj-stream aria-live="polite">
+                <article class="message message-assistant">
+                    <div class="message-role" data-time="ready">ai</div>
+                    <div class="message-content">在知识库管理页验证你刚入库的文档是否被检索到。</div>
+                </article>
+            </section>
+            <form class="xj-composer" data-xj-form>
+                <label class="xj-composer__label" for="kb-xj-input">message</label>
+                <textarea id="kb-xj-input" data-xj-input rows="2"
+                          placeholder="问问知识库里有什么 ..."></textarea>
+                <div class="xj-composer__row">
+                    <button type="button" class="xj-btn" data-xj-voice>voice</button>
+                    <button type="submit" class="xj-btn xj-btn--primary" data-xj-send>send ⏎</button>
+                </div>
+            </form>
+        </section>
+    </div>
+    <button class="xj-launcher" data-xj-launcher>AI</button>
+
+    <div class="kb-toast" data-kb-toast></div>
+</div>
+
+<script src="theme.js"></script>
+<script src="assistant.js"></script>
+<script src="knowledge.js"></script>
+</body>
+</html>
